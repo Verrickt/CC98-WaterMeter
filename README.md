@@ -3,7 +3,7 @@
 ### 项目简介
 **水表助手 (WaterMaker)** 是一款专为 CC98 论坛“水楼”设计的非官方数据统计工具，主要用于成年用户（楼内发帖数 ≥ 500）的数据统计与分析。
 
-本程序基于 **WPF** 框架构建，UI 界面采用 [WPF UI](https://wpfui.lepo.co) 库开发，并遵循 **GPL 开源协议**发布。
+本程序基于 **WPF** 框架构建，UI 界面采用 [WPF UI](https://wpfui.lepo.co) 库开发，于[GNU General Public License V3](https://www.gnu.org/licenses/gpl-3.0.en.html#license-text)许可下开源。
 
 ### 核心机制
 程序利用 CC98 网页端的 `ClientID` 与 `ClientSecret`，通过用户提供的 `RefreshToken` 接入 [CC98 官方 API](https://api.cc98.org)。
