@@ -27,7 +27,7 @@ public class CC98API
         result.EnsureSuccessStatusCode();
         var res = await result.Content.ReadAsStringAsync();
         var postInfos = JsonConvert.DeserializeObject<PostInfo[]>(res);
-        new Log.Log(LogLevel.Info, $"获取{floor}到{floor+postInfos?.Length}楼回复用户...成功").Send();
+        new Log.Log(LogLevel.Info, $"获取{floor}到{floor+postInfos?.Length}楼回复用户成功").Send();
         return postInfos;
     }
 
