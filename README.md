@@ -1,6 +1,4 @@
-markdown
-
-# 水表助手 (WaterMaker) 项目说明文档
+# 水表助手 (WaterMaker) 
 
 ### 项目简介
 **水表助手 (WaterMaker)** 是一款专为 CC98 论坛“水楼”设计的非官方数据统计工具，主要用于成年用户（楼内发帖数 ≥ 500）的数据统计与分析。
@@ -18,7 +16,7 @@ markdown
 
 ### 合规性声明与风险预警
 
-**【核心警告】CC98 论坛严禁非法爬虫行为。** 
+*** CC98 论坛严禁非法爬虫行为***
 
 根据论坛官方公告 [《关于近期上线反爬虫系统的说明》](https://www.cc98.org/topic/4918357#1)：
 
@@ -31,9 +29,9 @@ markdown
 
 为了尽可能规避风险，本程序在设计与实现上采取了以下限制：
 
-1.  **非内容抓取（核心规避措施）**：CC98 严禁爬虫非法获取大量数据。为了规避法律与账号风险，**水表助手仅在本地缓存中保存各楼层的回复者 ID、回复时间等内容用于统计，而不保存任何回复的具体内容**。回复内容通常是爬虫使用者最希望获取的数据，本程序对此做了彻底的物理隔离。
+1.  **非内容抓取（核心规避措施）**：CC98 严禁爬虫非法获取大量数据。为了规避法律与账号风险，水表助手仅在本地缓存中保存各楼层的回复者 ID、回复时间等信息用统计，回复的具体内容**不做保存**。回复内容通常是爬虫使用者最希望获取的数据，本程序对此做了彻底的物理隔离。
 2.  **频率限制**：程序在代码逻辑层限制了最低访问间隔为 **3 秒**，杜绝了高频扫描行为，以减轻对服务器造成的负担
-3.  **身份透明**：程序在所有请求头中通过 UserAgent 明确声明了自身身份：
+3.  **身份透明**：程序在所有请求头中通过 UserAgent [明确声明了自身身份](https://github.com/Verrickt/WaterMeter/blob/b09d902f6d1ebab4d1b8a6e1ec30b2cb2b76e2dc/WaterMeter/API/RefreshTokenHttpMessageHandler.cs#L40)：
     `request.Headers.UserAgent.Add(new ProductInfoHeaderValue("WaterMeter", "1.0"));`
 
 **【免责声明】**
@@ -49,6 +47,7 @@ markdown
 
 1.  **隐私风险**：`config.json` 文件内包含您的 **RefreshToken**。
     *   **警告**：`RefreshToken` 在 CC98 授权体系中具有极高权限，**其泄露等同于明文密码泄露**。请务必妥善保管该文件，切勿将其上传至公共 GitHub 仓库、论坛或分享给他人。
+    *  本程序使用了 CC98 网页端的 `ClientID` 与 `ClientSecret`，如果您怀疑`RefreshToken`泄露，请到[CC98登录中心](https://openid.cc98.org/Grant)中撤销应用名称为**CC98 论坛**的授权。
 2.  **数据处理**：`{TopicId}-replies.json` 存储了每层楼回复者的信息（每行一个Json数组，数据量不定）。
     *   **注意**：由于网络同步或删除机制，缓存数据可能包含重复项，或包含已被删除（`IsDeleted == true`）的回复。
-    *   **建议**：在进行最终统计前，请务必根据 `floor`（楼层数）字段进行去重和数据清洗。可参考`StatGenerator`()的实现。
+    *   **建议**：在进行最终统计前，请务必根据 `floor`（楼层数）字段进行去重和数据清洗。可参考[StatGenerator](https://github.com/Verrickt/WaterMeter/blob/b09d902f6d1ebab4d1b8a6e1ec30b2cb2b76e2dc/WaterMeter/Stat/StatGenerator.cs#L10)的实现。
