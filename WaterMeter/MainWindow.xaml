@@ -69,9 +69,9 @@
                     <Label Margin="5">总楼层数</Label>
                     <TextBox Margin="5" IsEnabled="False" Text="{Binding MaxFloor,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     <StackPanel Orientation="Horizontal">
-                      
                         <Button  Margin="5" Command="{Binding SaveConfigCommand}" >保存设置</Button>
                         <Button Margin="5" Command="{Binding OpenConfigDirCommand}">打开配置目录</Button>
+                        <ui:Anchor Icon="{ui:SymbolIcon Link24}" NavigateUri="https://www.github.com/verrickt/WaterMeter" Margin="5" >关于</ui:Anchor>
                     </StackPanel>
                 </StackPanel>
 
@@ -79,7 +79,6 @@
                     <ui:Button Appearance="Primary" Margin="5" Command="{Binding StartOverWatchCommand}">开始守望</ui:Button>
                     <Button Margin="5" Command="{Binding StopOverWatchCommand}">停止守望</Button>
                     <Button Margin="5" Command="{Binding GenerateStatCommand}">统计成年用户</Button>
-                    <ui:Button Appearance="Info" Margin="5" >关于</ui:Button>
                 </StackPanel>
             </Grid>
         </Grid>
