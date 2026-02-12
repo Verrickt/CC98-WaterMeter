@@ -50,4 +50,4 @@
     *  本程序使用了 CC98 网页端的 `ClientID` 与 `ClientSecret`，如果您怀疑`RefreshToken`泄露，请到[CC98登录中心](https://openid.cc98.org/Grant)中撤销应用名称为**CC98 论坛**的授权。
 2.  **数据处理**：`{TopicId}-replies.json` 存储了每层楼回复者的信息（每行一个Json数组，数据量不定）。
     *   **注意**：由于网络同步或删除机制，缓存数据可能包含重复项，或包含已被删除（`IsDeleted == true`）的回复。
-    *   **建议**：在进行最终统计前，请务必根据 `floor`（楼层数）字段进行去重和数据清洗。可参考[StatGenerator](https://github.com/Verrickt/WaterMeter/blob/b09d902f6d1ebab4d1b8a6e1ec30b2cb2b76e2dc/WaterMeter/Stat/StatGenerator.cs#L10)的实现。
+    *   **建议**：在进行最终统计前，请务必根据 `floor`（楼层数）字段进行去重和数据清洗。可参考[StatGenerator](https://github.com/Verrickt/WaterMeter/blob/b09d902f6d1ebab4d1b8a6e1ec30b2cb2b76e2dc/WaterMeter/Stat/StatGenerator.cs#L10)的实现
