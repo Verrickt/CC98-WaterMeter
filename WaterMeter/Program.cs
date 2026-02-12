@@ -39,11 +39,13 @@ public static class Program
     {
         Container container = new Container();
         container.RegisterSingleton<OverWatcher>();
+        container.RegisterSingleton<CacheManager>();
         container.RegisterSingleton<OverWatchContext>(() =>
         {
+            var cache = container.GetInstance<CacheManager>();
             var context = new OverWatchContext(container.GetInstance<WaterMetterConfig>(),
-                container.GetInstance<ConfigReader>());
-            context.Init();
+                container.GetInstance<ConfigReader>(),cache);
+            context.InitAsync().Wait();
             return context;
         });
         container.RegisterSingleton<CC98API>();

@@ -1,8 +1,9 @@
-using System.Windows;
-using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Threading;
 using WaterMeter.Config;
 using WaterMeter.Messages;
 using WaterMeter.Stat;
@@ -207,11 +208,23 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
         _overWatcher.StopOverWatch();
     }
 
+    [RelayCommand]
+    private void OpenConfigDir()
+    {
+        var path = _reader.BasePath;
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = path,
+            UseShellExecute = true, // 必须为 true 才能直接打开路径
+            Verb = "open"
+        });
+    }
+
     [RelayCommand(CanExecute = nameof(CanStart))]
     private async Task GenerateStatAsync()
     {
         
-        var result = await _statGenerator.RunStatsAsync(500);
+        var result = await _statGenerator.RunStatsAsync(_config.TopicId,500);
         var ans = _formatter.Format(result);
         var w = new StatResultWindow();
         w.DataContext = new StatResultViewModel(ans);

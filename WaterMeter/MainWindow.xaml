@@ -68,7 +68,11 @@
                     <TextBox Margin="5" IsEnabled="False" Text="{Binding CurrentFloor,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     <Label Margin="5">总楼层数</Label>
                     <TextBox Margin="5" IsEnabled="False" Text="{Binding MaxFloor,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                    <Button Margin="5" Command="{Binding SaveConfigCommand}" >保存设置</Button>
+                    <StackPanel Orientation="Horizontal">
+                      
+                        <Button  Margin="5" Command="{Binding SaveConfigCommand}" >保存设置</Button>
+                        <Button Margin="5" Command="{Binding OpenConfigDirCommand}">打开配置目录</Button>
+                    </StackPanel>
                 </StackPanel>
 
                 <StackPanel Margin="5,0,5,0"  VerticalAlignment="Bottom" HorizontalAlignment="Left" Orientation="Horizontal"  Grid.Row="1">

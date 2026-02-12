@@ -7,42 +7,31 @@ using WaterMeter.API;
 
 namespace WaterMeter.Stat
 {
-    public class StatGenerator(OverWatchContext context)
+    public class StatGenerator(CacheManager cacheManager)
     {
-        public async Task<StatResult> RunStatsAsync(int totalReplyCountThreshold)
+        public async Task<StatResult> RunStatsAsync(string topicId,int totalReplyCountThreshold)
         {
             HashSet<long> replyIds = new HashSet<long>();
-            await using var stream = File.OpenRead(context.ReplyCachePath);
-            using var sr = new StreamReader(stream);
             Dictionary<int,StatEntry> result = new Dictionary<int,StatEntry>();
-            var totalReplies = 0;
-            while (true)
+            await foreach (var readReply in cacheManager.ReadReplysAsync(topicId))
             {
-                var line = await sr.ReadLineAsync();
-                if (line == null)
+                if (readReply.IsDeleted|| replyIds.Contains(readReply.Id)||readReply.UserId==null)
                 {
-                    break;
+                    continue;
                 }
-                var replies = JsonConvert.DeserializeObject<PostInfo[]>(line)!
-                    .Where(i=>!replyIds.Contains(i.Id)).Where(i=>!i.IsDeleted)??[];
-                var postInfos = replies.ToList();
-                totalReplies += postInfos.Count();
-                foreach (var group in postInfos.GroupBy(i=>i.UserId!.Value))
+
+                var userId = readReply.UserId.Value;
+                var entry = result.GetValueOrDefault(userId, new StatEntry(userId, 
+                    readReply.UserName, int.MaxValue, DateTimeOffset.MaxValue, 0));
+
+                entry.FirstAppearedFloor = Math.Min(entry.FirstAppearedFloor, readReply.Floor);
+                entry.TotalReplyCount += 1;
+                if (entry.FirstAppearedTime > readReply.Time)
                 {
-                    var replyCount = group.Count();
-                    var userName = group.Select(i => i.UserName).FirstOrDefault()!;
-                    group.Select(i => i.Id).ToList().ForEach(i => replyIds.Add(i));
-                    var firstAppearedFloor = group.Min(i => i.Floor);
-                    var firstAppearedTime = group.Min(i => i.Time);
-                    var entry = result.GetValueOrDefault(group.Key, new StatEntry(group.Key, userName, int.MaxValue, DateTimeOffset.MaxValue,0));
-                    entry.TotalReplyCount += replyCount;
-                    entry.FirstAppearedFloor = Math.Min(entry.FirstAppearedFloor, firstAppearedFloor);
-                    if (entry.FirstAppearedTime > firstAppearedTime)
-                    {
-                        entry.FirstAppearedTime = firstAppearedTime;
-                    }
-                    result[group.Key] = entry;
+                    entry.FirstAppearedTime = readReply.Time;
                 }
+                result[userId] = entry;
+                replyIds.Add(readReply.Id);
             }
 
             var entries = result.Values

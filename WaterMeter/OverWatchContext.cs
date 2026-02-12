@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Reflection;
 using CommunityToolkit.Mvvm.Messaging;
 using Newtonsoft.Json;
@@ -9,39 +8,24 @@ using WaterMeter.Messages;
 
 namespace WaterMeter;
 
-public class OverWatchContext(WaterMetterConfig config,ConfigReader reader):IRecipient<ConfigChangedMessage>
+public class OverWatchContext(WaterMetterConfig config,ConfigReader reader, CacheManager cacheManager) :IRecipient<ConfigChangedMessage>
 {
-    public TopicInfo CachedTopicInfo { get; private set; }
+    public TopicInfo? CachedTopicInfo { get; private set; }
     public int OverwatchInterval => config.OverWatchInterval;
     public string TopicId => config.TopicId;
     public int CurrentFloor { get; private set; }
     public int MaxFloor => int.Parse(config.MaxFloors);
-    private DirectoryInfo CacheDir => new(Path.Combine(Environment.CurrentDirectory,"data"));
-    internal string TopicCachePath => Path.Join(CacheDir.FullName, $"{TopicId}-topic.json");
-    internal string ReplyCachePath => Path.Join(CacheDir.FullName, $"{TopicId}-replies.json");
-
 
     [NotNull]
-    private HashSet<int> _cachedFloors = new HashSet<int>();
-    public void Init()
+    private HashSet<int> _cachedFloors = new();
+    public async Task InitAsync()
     {
-        CacheDir.Create();
-        _cachedFloors = new HashSet<int>();
+
         CurrentFloor = int.Parse(config.CurrentFloor);
-        if (File.Exists(TopicCachePath))
-        {
-            var json = File.ReadAllText(TopicCachePath);
-            CachedTopicInfo = JsonConvert.DeserializeObject<TopicInfo>(json)!;
-        }
-        if (File.Exists(ReplyCachePath))
-        {
-            var lines = File.ReadAllLines(ReplyCachePath);
-            foreach (var line in lines)
-            {
-                JsonConvert.DeserializeObject<List<PostInfo>>(line)?
-                    .ForEach(r=>_cachedFloors.Add(r.Floor));
-            }
-        }
+        CachedTopicInfo = await cacheManager.ReadTopicInfoAsync(config.TopicId);
+        _cachedFloors =
+            new HashSet<int>(await cacheManager.ReadReplysAsync(config.TopicId).Select(i => i.Floor).ToListAsync());
+            
         WeakReferenceMessenger.Default.Register(this);
     }
     public async Task UpdateTopicInfoAsync(TopicInfo? topicInfo)
@@ -49,8 +33,7 @@ public class OverWatchContext(WaterMetterConfig config,ConfigReader reader):IRec
         if (topicInfo != null)
         {
             CachedTopicInfo = topicInfo;
-            var json = JsonConvert.SerializeObject(topicInfo);
-            await File.WriteAllTextAsync(TopicCachePath, json);
+            await cacheManager.UpdateTopicInfo(topicInfo);
             config.MaxFloors = (topicInfo.ReplyCount+1).ToString();
             WeakReferenceMessenger.Default.Send(new ConfigChangedMessage(config));
         }
@@ -62,11 +45,8 @@ public class OverWatchContext(WaterMetterConfig config,ConfigReader reader):IRec
         if (filtered?.Count>0)
         {
             var json = JsonConvert.SerializeObject(postInfos);
-            if (File.Exists(ReplyCachePath))
-            {
-                await File.AppendAllTextAsync(ReplyCachePath,Environment.NewLine);
-            }
-            await File.AppendAllTextAsync(ReplyCachePath, json);
+
+            await cacheManager.AppendReplyInfos(TopicId,filtered);
             filtered.ForEach(f=>_cachedFloors.Add(f.Floor));
         }
     }
@@ -79,12 +59,12 @@ public class OverWatchContext(WaterMetterConfig config,ConfigReader reader):IRec
         await reader.SaveConfigAsync(config);
     }
 
-    public void Receive(ConfigChangedMessage message)
+    public async void Receive(ConfigChangedMessage message)
     {
         if (message.Value.TopicId != CachedTopicInfo?.Id.ToString())
         {
             CachedTopicInfo = null;
-            Init();
+            await InitAsync();
         }
         this.CurrentFloor = int.Parse(message.Value.CurrentFloor);
     }
