@@ -44,8 +44,6 @@ public class OverWatchContext(WaterMetterConfig config,ConfigReader reader, Cach
         var filtered = postInfos?.Where(i => !_cachedFloors.Contains(i.Floor))?.ToList();
         if (filtered?.Count>0)
         {
-            var json = JsonConvert.SerializeObject(postInfos);
-
             await cacheManager.AppendReplyInfos(TopicId,filtered);
             filtered.ForEach(f=>_cachedFloors.Add(f.Floor));
         }
