@@ -1,22 +1,22 @@
 # 水表助手 (WaterMaker) 
 
-### 项目简介
-**水表助手 (WaterMaker)** 是一款专为 CC98 论坛“水楼”设计的非官方数据统计工具，主要用于成年用户（楼内发帖数 ≥ 500）的数据统计与分析。
+### 简介
+**水表助手 (WaterMaker)** 是一款专为 CC98 论坛“水楼”设计的非官方数据统计工具，主要用于成年用户（楼内发帖数 ≥ 500）的数据统计与分析
 
-本程序基于 **WPF** 框架构建，UI 界面采用 [WPF UI](https://wpfui.lepo.co) 库开发，于[GNU General Public License V3](https://www.gnu.org/licenses/gpl-3.0.en.html#license-text)许可下开源。
+本程序基于WPF框架构建，UI 界面采用 [WPF UI](https://wpfui.lepo.co) 库开发，于[GNU General Public License V3](https://www.gnu.org/licenses/gpl-3.0.en.html#license-text)许可下开源
 
 ### 核心机制
-程序利用 CC98 网页端的 `ClientID` 与 `ClientSecret`，通过用户提供的 `RefreshToken` 接入 [CC98 官方 API](https://api.cc98.org)。
+程序利用 CC98 网页端的 `ClientID` 与 `ClientSecret`，通过用户提供的 `RefreshToken` 调用 [CC98 官方 API](https://api.cc98.org)
 
-*   **自动化获取**：用户需配置目标主题 ID 及访问间隔（须为 ≥ 3 的正整数，单位：秒）。程序将自动同步历史回复数据并持久化至本地。
-*   **实时追踪**：当同步至主题末尾楼层后，程序将进入监听模式（每 10 秒轮询一次），自动增量获取最新内容。
-*   **凭证管理**：程序具备自动维护会话功能。当 `AccessToken` 过期时，将利用 `RefreshToken` 自动刷新，确保统计过程不间断。
+*   自动化获取：用户需配置目标主题 ID 及访问间隔（须为 ≥ 3 的正整数，单位：秒）。程序将自动同步历史回复数据并持久化至本地。
+*   实时追踪：当同步至主题末尾楼层后，程序将进入监听模式（每 10 秒轮询一次），自动增量获取最新内容
+*   凭证管理：程序具备自动维护会话功能。当 `AccessToken` 过期时，将利用 `RefreshToken` 自动刷新，确保统计过程不间断
 
 ---
 
 ### 合规性声明与风险预警
 
-**CC98 论坛严禁非法爬虫行为**
+CC98 论坛严禁非法爬虫行为
 
 根据论坛官方公告 [《关于近期上线反爬虫系统的说明》](https://www.cc98.org/topic/4918357#1)：
 
@@ -29,15 +29,18 @@
 
 为了尽可能规避风险，本程序在设计与实现上采取了以下限制：
 
-1.  **非内容抓取（核心规避措施）**：CC98 严禁爬虫非法获取大量数据。为了规避法律与账号风险，水表助手仅在本地缓存中保存各楼层的回复者 ID、回复时间等信息用统计，回复的具体内容**不做保存**。回复内容通常是爬虫使用者最希望获取的数据，本程序对此做了彻底的物理隔离。
-2.  **频率限制**：程序在代码逻辑层限制了最低访问间隔为 **3 秒**，杜绝了高频扫描行为，以减轻对服务器造成的负担
-3.  **身份透明**：程序在所有请求头中通过 UserAgent [明确声明了自身身份](https://github.com/Verrickt/WaterMeter/blob/b09d902f6d1ebab4d1b8a6e1ec30b2cb2b76e2dc/WaterMeter/API/RefreshTokenHttpMessageHandler.cs#L40)：
-    `request.Headers.UserAgent.Add(new ProductInfoHeaderValue("WaterMeter", "1.0"));`
+1.  不保存回复内容：CC98 严禁爬虫非法获取大量数据。为了规避法律与账号风险，水表助手仅在本地缓存中保存各楼层的回复者 ID、回复时间等信息用统计，回复的具体内容**不做保存**
+2.  频率限制：程序在代码逻辑层限制了最低访问间隔为 **3 秒**，以减轻对服务器造成的负担
+3.  身份透明：程序在所有请求头中通过 UserAgent [显式声明了身份](https://github.com/Verrickt/WaterMeter/blob/b09d902f6d1ebab4d1b8a6e1ec30b2cb2b76e2dc/WaterMeter/API/RefreshTokenHttpMessageHandler.cs#L42)
+``` csharp
+request.Headers.UserAgent.Add(new ProductInfoHeaderValue("WaterMeter", "1.0"));
+```
 
-**【免责声明】**
-尽管已采取上述防护措施，使用者仍需知晓：**使用本程序仍可能被系统认定为爬虫行为并导致账号被锁定。** 本程序根据 **GPL 协议** 以 **“原样提供”（Provided AS-IS）** 的形式分发，作者不提供任何明示或暗示的保证（No Warranty, explicitly or implied）。
+【免责声明】
 
-**请使用者自行承担所有风险，由此产生的任何账号封禁、法律责任均与作者无关**
+尽管已采取上述措施，使用者仍需知晓：使用本程序仍可能被系统认定为爬虫行为并导致账号被锁定。本程序根据GPL 协议以 **“原样提供”（Provided AS-IS）** 形式分发，作者**不提供**任何明示或暗示的保证（No Warranty, explicitly or implied）
+
+请使用者**自行承担**所有风险，由此产生的任何账号封禁、法律责任均与作者无关
 
 ---
 
@@ -45,9 +48,9 @@
 
 程序配置文件及本地数据统一存储于系统目录：`%AppData%/WaterMaker`
 
-1.  **隐私风险**：`config.json` 文件内包含您的 **RefreshToken**。
-    *   **警告**：`RefreshToken` 在 CC98 授权体系中具有极高权限，**其泄露等同于明文密码泄露**。请务必妥善保管该文件，切勿将其上传至公共 GitHub 仓库、论坛或分享给他人。
-    *  本程序使用了 CC98 网页端的 `ClientID` 与 `ClientSecret`，如果您怀疑`RefreshToken`泄露，请到[CC98登录中心](https://openid.cc98.org/Grant)中撤销应用名称为**CC98 论坛**的授权。
-2.  **数据处理**：`{TopicId}-replies.json` 存储了每层楼回复者的信息（每行一个Json数组，数据量不定）。
-    *   **注意**：由于网络同步或删除机制，缓存数据可能包含重复项，或包含已被删除（`IsDeleted == true`）的回复。
-    *   **建议**：在进行最终统计前，请务必根据 `floor`（楼层数）字段进行去重和数据清洗。可参考[StatGenerator](https://github.com/Verrickt/WaterMeter/blob/b09d902f6d1ebab4d1b8a6e1ec30b2cb2b76e2dc/WaterMeter/Stat/StatGenerator.cs#L10)的实现
+1.  隐私风险：`config.json` 文件内包含您的 RefreshToken
+    *   警告：`RefreshToken` 在 CC98 授权体系中具有极高权限，其泄露**约等于明文密码泄露**。请务必妥善保管该文件，切勿将其上传至公共 GitHub 仓库、论坛或分享给他人
+    *  本程序使用了 CC98 网页端的 `ClientID` 与 `ClientSecret`，如果您怀疑`RefreshToken`泄露，请到[CC98登录中心](https://openid.cc98.org/Grant)中撤销应用名称为**CC98 论坛**的授权
+2.  数据处理：`{topicId}-replies.json` 存储了每层楼回复者的信息（每行一个Json数组，元素数量不定）
+    *   注意：由于网络同步或删除机制，缓存数据可能存在重复项或已被删除（`IsDeleted == true`）的回复
+    *   建议：在进行最终统计前，请务必根据 `floor`（楼层数）字段进行去重和数据清洗。可参考[StatGenerator](https://github.com/Verrickt/WaterMeter/blob/b09d902f6d1ebab4d1b8a6e1ec30b2cb2b76e2dc/WaterMeter/Stat/StatGenerator.cs#L10)
