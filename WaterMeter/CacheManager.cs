@@ -78,8 +78,7 @@ public class CacheManager
         await using var writer = new StreamWriter(file);
         var jsonTextWriter = new JsonTextWriter(writer);
         var serializer = new JsonSerializer();
-
+        await jsonTextWriter.WriteRawAsync(Environment.NewLine, cancellation);
         serializer.Serialize(jsonTextWriter, postInfos);
-        await writer.WriteLineAsync(); // 简单写入换行符，对应你原本的 ReadLineAsync
     }
 }
