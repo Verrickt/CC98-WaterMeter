@@ -20,14 +20,14 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.0' # Update to your target version (e.g., 9.0.x)
+          dotnet-version: '10.0.X' # Update to your target version (e.g., 9.0.x)
 
       - name: Restore Dependencies
         run: dotnet restore
 
       - name: Publish Binary
         # Generates a single-file, self-contained executable for Windows x64
-        run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ./publish
+        run: dotnet publish -c Release -r win-x64 --no-self-contained -o ./publish
 
       - name: Package Binaries
         shell: pwsh
@@ -38,7 +38,7 @@ jobs:
         shell: pwsh
         run: |
           $hash = Get-FileHash WaterMeter-win-x64.zip -Algorithm SHA256
-          $hash.Hash + "  WaterMeter-win-x64.zip" | Out-File -FilePath checksums.txt
+          $hash.Hash + "  WaterMeter-win-x64.zip" | Out-File -FilePath SHA256SUMS.txt
           echo "Generated Hash: $($hash.Hash)"
 
       - name: Create Release and Upload Assets
@@ -46,7 +46,7 @@ jobs:
         with:
           files: |
             WaterMeter-win-x64.zip
-            checksums.txt
+            SHA256SUMS.txt
           generate_release_notes: true
           draft: false
           prerelease: false
