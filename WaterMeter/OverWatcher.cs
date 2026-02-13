@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.Messaging;
 using WaterMeter.API;
-using WaterMeter.Log;
+using WaterMeter.SimpleLog;
 using WaterMeter.Messages;
 
 namespace WaterMeter;
@@ -8,15 +8,15 @@ namespace WaterMeter;
 public class OverWatcher(CC98API api, OverWatchContext context)
 {
     private Task? _overWatchTask;
-    private int Started = 0;
-    public bool IsRunning => Started != 0;
+    private int _started = 0;
+    public bool IsRunning => _started != 0;
     private async Task OverwatchImpl()
     {
         DateTimeOffset prev = DateTimeOffset.MinValue;
-        new Log.Log(LogLevel.Info, "获取帖子信息....").Send();
+        new SimpleLog.Log(LogLevel.Info, "获取帖子信息....").Send();
         var topicInfo = await api.GetTopicInfoAsync(context.TopicId);
         await context.UpdateTopicInfoAsync(topicInfo);
-        while (Started == 1)
+        while (_started == 1)
         {
 
             var now = DateTimeOffset.Now;
@@ -29,17 +29,17 @@ public class OverWatcher(CC98API api, OverWatchContext context)
                     {
                         var postInfos = await api.GetPostInfoAsync(context.TopicId, context.CurrentFloor);
                         await context.UpdateReplyInfoAsync(postInfos);
-                        await context.AdvanceAsync(postInfos?.Count());
+                        await context.AdvanceAsync(postInfos?.Count);
                     }
                     else
                     {
-                        new Log.Log(LogLevel.Info, "已到楼顶...10s后重新获取帖子信息").Send();
+                        new SimpleLog.Log(LogLevel.Info, "已到楼顶...10s后重新获取帖子信息").Send();
                         await Task.Delay(10000);
                         topicInfo = await api.GetTopicInfoAsync(context.TopicId);
                         await context.UpdateTopicInfoAsync(topicInfo);
                     }
                 }
-                catch (Exception e) when (ExceptionFilterUtility.False(() => new Log.Log(
+                catch (Exception e) when (ExceptionFilterUtility.False(() => new SimpleLog.Log(
                                               LogLevel.Critical, $"调用CC98API错误:{e}").Send()))
                 {
                 }
@@ -64,19 +64,19 @@ public class OverWatcher(CC98API api, OverWatchContext context)
                 {
                     await OverwatchImpl();
                 }
-                catch (Exception e) when (ExceptionFilterUtility.True(() => new Log.Log(LogLevel.Critical, $"守望出错{e}").Send()))
+                catch (Exception e) when (ExceptionFilterUtility.True(() => new SimpleLog.Log(LogLevel.Critical, $"守望出错{e}").Send()))
                 {
                     return;
                 }
             });
         }
-        Interlocked.Exchange(ref Started, 1);
-        new Log.Log(LogLevel.Info, "开始守望").Send();
+        Interlocked.Exchange(ref _started, 1);
+        new SimpleLog.Log(LogLevel.Info, "开始守望").Send();
     }
 
     public void StopOverWatch()
     {
-        Interlocked.Exchange(ref Started, 0);
-        new Log.Log(LogLevel.Info, "守望已停止").Send();
+        Interlocked.Exchange(ref _started, 0);
+        new SimpleLog.Log(LogLevel.Info, "守望已停止").Send();
     }
 }

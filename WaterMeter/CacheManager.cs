@@ -31,14 +31,13 @@ public class CacheManager
     {
         var filePath = GetFilePath($"{topicId}-topic.json");
         if (!File.Exists(filePath)) return null;
-
         using var reader = File.OpenText(filePath);
         var jsonTextReader = new JsonTextReader(reader);
         var serializer = new JsonSerializer();
         return serializer.Deserialize<TopicInfo>(jsonTextReader);
     }
 
-    public async IAsyncEnumerable<PostInfo> ReadReplysAsync(string topicId, [EnumeratorCancellation] CancellationToken token = default)
+    public async IAsyncEnumerable<PostInfo> ReadRepliesAsync(string topicId, [EnumeratorCancellation] CancellationToken token = default)
     {
         var filePath = GetFilePath($"{topicId}-replies.json");
         if (!File.Exists(filePath)) yield break;

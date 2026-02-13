@@ -11,9 +11,9 @@ namespace WaterMeter.Stat
     {
         public async Task<StatResult> RunStatsAsync(string topicId,int totalReplyCountThreshold)
         {
-            HashSet<long> replyIds = new HashSet<long>();
+            HashSet<long> replyIds = [];
             Dictionary<int,StatEntry> result = new Dictionary<int,StatEntry>();
-            await foreach (var readReply in cacheManager.ReadReplysAsync(topicId))
+            await foreach (var readReply in cacheManager.ReadRepliesAsync(topicId))
             {
                 if (readReply.IsDeleted|| replyIds.Contains(readReply.Id)||readReply.UserId==null)
                 {
@@ -40,7 +40,7 @@ namespace WaterMeter.Stat
                 .ThenByDescending(i => i.FirstAppearedFloor)
                 .ThenByDescending(i => i.UserId)
                 .ToList().AsReadOnly();
-            return new StatResult(replyIds.Count(), entries);
+            return new StatResult(replyIds.Count, entries);
         }
     }
 }

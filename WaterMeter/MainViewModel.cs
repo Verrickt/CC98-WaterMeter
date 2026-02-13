@@ -46,7 +46,7 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
     {
         if (int.TryParse(interval, out var intervalResult)&&intervalResult>=3)
         {
-            return !string.IsNullOrWhiteSpace(TopicId) && !string.IsNullOrWhiteSpace(RefreshToken);
+            return !string.IsNullOrWhiteSpace(topicId) && !string.IsNullOrWhiteSpace(refreshToken);
         }
 
         return false;
@@ -211,7 +211,7 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
     [RelayCommand]
     private void OpenConfigDir()
     {
-        var path = _reader.BasePath;
+        var path = ConfigReader.BasePath;
         Process.Start(new ProcessStartInfo
         {
             FileName = path,
@@ -226,8 +226,10 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
         
         var result = await _statGenerator.RunStatsAsync(_config.TopicId,500);
         var ans = _formatter.Format(result);
-        var w = new StatResultWindow();
-        w.DataContext = new StatResultViewModel(ans);
+        var w = new StatResultWindow
+        {
+            DataContext = new StatResultViewModel(ans)
+        };
         w.ShowDialog();
     }
     public void Receive(ConfigChangedMessage message)

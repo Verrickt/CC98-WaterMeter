@@ -2,8 +2,8 @@ using Newtonsoft.Json;
 
 namespace WaterMeter.API;
 
-public class RefreshTokenResopnse
+public class RefreshTokenResponse
 {
     [JsonProperty("access_token")]
-    public string AccessToken { get; set; }
+    public required string AccessToken { get; set; }
 }

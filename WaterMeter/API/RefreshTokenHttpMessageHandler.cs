@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using WaterMeter.Config;
-using WaterMeter.Log;
+using WaterMeter.SimpleLog;
 using WaterMeter.Messages;
 
 namespace WaterMeter.API;
@@ -14,7 +14,7 @@ public class RefreshTokenHttpMessageHandler : DelegatingHandler
 
     private readonly HttpClient _backChannel = new HttpClient();
 
-    private int MaxRetryCount = 1;
+    private readonly int _maxRetryCount = 1;
     private string RefreshToken => _config.RefreshToken;
     private string? _accessToken;
     private readonly WaterMetterConfig _config;
@@ -30,12 +30,12 @@ public class RefreshTokenHttpMessageHandler : DelegatingHandler
     {
         if (string.IsNullOrEmpty(_accessToken))
         {
-            new Log.Log(LogLevel.Info, "AccessToken为空，刷新中...").Send();
+            new SimpleLog.Log(LogLevel.Info, "AccessToken为空，刷新中...").Send();
             await RefreshAccessToken();
         }
 
-        HttpResponseMessage response = null;
-        for (int i = 0; i <= MaxRetryCount; i++)
+        HttpResponseMessage? response = null;
+        for (int i = 0; i <= _maxRetryCount; i++)
         {
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
             request.Headers.UserAgent.Clear();
@@ -43,7 +43,7 @@ public class RefreshTokenHttpMessageHandler : DelegatingHandler
             response = await base.SendAsync(request, cancellationToken);
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                new Log.Log(LogLevel.Info, "AccessToken过期，刷新中...").Send();
+                new SimpleLog.Log(LogLevel.Info, "AccessToken过期，刷新中...").Send();
                 await RefreshAccessToken();
                 continue;
             }
@@ -65,13 +65,13 @@ public class RefreshTokenHttpMessageHandler : DelegatingHandler
             var response = await _backChannel.PostAsync("https://openid.cc98.org/connect/token", content);
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<RefreshTokenResopnse>(json);
+            var result = JsonConvert.DeserializeObject<RefreshTokenResponse>(json);
             _accessToken = result!.AccessToken;
-            new Log.Log(LogLevel.Info, "刷新AccessToken成功").Send();
+            new SimpleLog.Log(LogLevel.Info, "刷新AccessToken成功").Send();
         }
         catch (Exception e)
         {
-            new Log.Log(LogLevel.Critical, $"刷新AccessToken失败,异常信息:{e}").Send();
+            new SimpleLog.Log(LogLevel.Critical, $"刷新AccessToken失败,异常信息:{e}").Send();
         }
 
     }

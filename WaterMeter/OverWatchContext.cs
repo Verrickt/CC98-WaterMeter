@@ -17,14 +17,14 @@ public class OverWatchContext(WaterMetterConfig config,ConfigReader reader, Cach
     public int MaxFloor => int.Parse(config.MaxFloors);
 
     [NotNull]
-    private HashSet<int> _cachedFloors = new();
+    private HashSet<int> _cachedFloors = [];
     public async Task InitAsync()
     {
 
         CurrentFloor = int.Parse(config.CurrentFloor);
         CachedTopicInfo = await cacheManager.ReadTopicInfoAsync(config.TopicId);
         _cachedFloors =
-            new HashSet<int>(await cacheManager.ReadReplysAsync(config.TopicId).Select(i => i.Floor).ToListAsync());
+            [..await cacheManager.ReadRepliesAsync(config.TopicId).Select(i => i.Floor).ToListAsync()];
             
         WeakReferenceMessenger.Default.Register(this);
     }

@@ -7,9 +7,9 @@ public class UBBFormatter(OverWatchContext context)
 {
 
 
-    private void WriteTableHeader(StringBuilder sb)
+    private static void WriteTableHeader(StringBuilder sb)
     {
-        void WriteHeaderCell(StringBuilder sb, string name)
+        static void WriteHeaderCell(StringBuilder sb, string name)
         {
             sb.Append("[th]");
             sb.Append(name);
@@ -22,7 +22,7 @@ public class UBBFormatter(OverWatchContext context)
         sb.AppendLine();
     }
 
-    private void WriteRow(StringBuilder sb, StatEntry entry,TopicInfo topicInfo)
+    private static void WriteRow(StringBuilder sb, StatEntry entry,TopicInfo topicInfo)
     {
         void WriteCell(StringBuilder sb, string content)
         {

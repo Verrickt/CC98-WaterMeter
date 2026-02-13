@@ -8,7 +8,7 @@ namespace WaterMeter.Config;
 public class ConfigReader
 {
 
-    public string BasePath => Path.Combine(
+    public static string BasePath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "WaterMaker");
     private readonly string _configPath = Path.Combine(

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using WaterMeter.Config;
-using WaterMeter.Log;
+using WaterMeter.SimpleLog;
 using WaterMeter.Messages;
 
 namespace WaterMeter.API;
@@ -17,7 +17,7 @@ public class CC98API
         result.EnsureSuccessStatusCode();
         var res = await result.Content.ReadAsStringAsync();
         var topicInfo = JsonConvert.DeserializeObject<TopicInfo>(res);
-        new Log.Log(LogLevel.Info, $"刷新主题帖{topicId},标题{topicInfo?.Title},总回复数{topicInfo?.ReplyCount}").Send();
+        new SimpleLog.Log(LogLevel.Info, $"刷新主题帖{topicId},标题{topicInfo?.Title},总回复数{topicInfo?.ReplyCount}").Send();
         return topicInfo;
     }
 
@@ -27,7 +27,7 @@ public class CC98API
         result.EnsureSuccessStatusCode();
         var res = await result.Content.ReadAsStringAsync();
         var postInfos = JsonConvert.DeserializeObject<PostInfo[]>(res);
-        new Log.Log(LogLevel.Info, $"获取{floor}到{floor+postInfos?.Length}楼回复用户成功").Send();
+        new SimpleLog.Log(LogLevel.Info, $"获取{floor}到{floor+postInfos?.Length}楼回复用户成功").Send();
         return postInfos;
     }
 

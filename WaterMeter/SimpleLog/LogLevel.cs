@@ -1,3 +1,3 @@
-namespace WaterMeter.Log;
+namespace WaterMeter.SimpleLog;
 
 public enum LogLevel{Verbose,Info,Critical}

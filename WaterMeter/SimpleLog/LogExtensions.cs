@@ -1,8 +1,8 @@
 using CommunityToolkit.Mvvm.Messaging;
-using WaterMeter.Log;
+using WaterMeter.SimpleLog;
 using WaterMeter.Messages;
 
-namespace WaterMeter.Log;
+namespace WaterMeter.SimpleLog;
 
 public static class LogExtensions
 {
