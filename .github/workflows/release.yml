@@ -3,13 +3,14 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*' # Triggers on tags starting with v, e.g., v1.0.1
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: write # Required to create releases and upload assets
+      contents: write
 
     steps:
       - name: Checkout Code
@@ -20,32 +21,48 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.X' # Update to your target version (e.g., 9.0.x)
+          dotnet-version: '10.0.x'
 
-      - name: Restore Dependencies
+      - name: Restore
         run: dotnet restore
 
-      - name: Publish Binary
-        # Generates a single-file, self-contained executable for Windows x64
+      - name: Publish
+        # Framework-dependent deployment (FDD) to reduce file size
         run: dotnet publish -c Release -r win-x64 --no-self-contained -o ./publish
 
-      - name: Package Binaries
+      - name: Package Assets
         shell: pwsh
         run: |
-          Compress-Archive -Path ./publish/* -DestinationPath WaterMeter-win-x64.zip
+          $version = "${{ github.ref_name }}"
+          if ($version -eq "master" -or $version -eq "main") { $version = "latest" }
+
+          $binName = "WaterMeter-$version-win-x64.zip"
+          Compress-Archive -Path ./publish/* -DestinationPath $binName
+          
+          # Manually package source code to include version in filename
+          $srcName = "WaterMeter-$version-Source.tar.gz"
+          git archive --format=tar.gz -o $srcName HEAD
+
+          echo "BIN_NAME=$binName" >> $env:GITHUB_ENV
+          echo "SRC_NAME=$srcName" >> $env:GITHUB_ENV
 
       - name: Generate SHA-256 Hash
         shell: pwsh
         run: |
-          $hash = Get-FileHash WaterMeter-win-x64.zip -Algorithm SHA256
-          $hash.Hash + "  WaterMeter-win-x64.zip" | Out-File -FilePath SHA256SUMS.txt
-          echo "Generated Hash: $($hash.Hash)"
+          $hashFile = "SHA256SUMS.txt"
+          # Standard GNU/Linux format: lowercase_hash + 2 spaces + filename
+          Get-FileHash ${{ env.BIN_NAME }}, ${{ env.SRC_NAME }} -Algorithm SHA256 | ForEach-Object {
+              "$($_.Hash.ToLower())  $($_.Path | Split-Path -Leaf)"
+          } | Out-File -FilePath $hashFile -Encoding ascii
+          
+          cat $hashFile
 
-      - name: Create Release and Upload Assets
+      - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            WaterMeter-win-x64.zip
+            ${{ env.BIN_NAME }}
+            ${{ env.SRC_NAME }}
             SHA256SUMS.txt
           generate_release_notes: true
           draft: false
