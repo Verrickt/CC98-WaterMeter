@@ -44,12 +44,12 @@ public class UBBFormatter(OverWatchContext context)
         if (result.AlmostAdults.Any())
         {
             sb.AppendLine($"[center]「[topic={topicInfo.Id}]{topicInfo.Title}[/topic]」成年&即将成年榜 by [url=https://github.com/verrickt/CC98-WaterMeter]CC98水表助手[/url][/center]");
-            sb.AppendLine($"[right]——生成时间 {DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss")} 统计回复数:{result.TotalReplies},成年用户数:{result.Adults.Count}[/right]");
+            sb.AppendLine($"[right]——生成时间 {DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss")} 统计回复数:{result.TotalReplies},成年用户数:{result.Adults.Count},即将成年用户数:{result.AlmostAdults.Count}[/right]");
         }
         else
         {
             sb.AppendLine($"[center]「[topic={topicInfo.Id}]{topicInfo.Title}[/topic]」成年榜 by [url=https://github.com/verrickt/CC98-WaterMeter]CC98水表助手[/url][/center]");
-            sb.AppendLine($"[right]——生成时间 {DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss")} 统计回复数:{result.TotalReplies},成年用户数:{result.Adults.Count},即将成年用户数:{result.AlmostAdults.Count}[/right]");
+            sb.AppendLine($"[right]——生成时间 {DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss")} 统计回复数:{result.TotalReplies},成年用户数:{result.Adults.Count}[/right]");
         }
 
         sb.AppendLine("[table]");
