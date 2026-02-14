@@ -23,11 +23,11 @@ public class CC98API
 
     public async Task<IReadOnlyList<PostInfo>?> GetPostInfoAsync(string topicId, int floor)
     {
-        var result = await _httpClient.GetAsync($"/topic/{topicId}/post?from={floor}&size={10}");
+        var result = await _httpClient.GetAsync($"/topic/{topicId}/post?from={floor-1}&size={10}");
         result.EnsureSuccessStatusCode();
         var res = await result.Content.ReadAsStringAsync();
         var postInfos = JsonConvert.DeserializeObject<PostInfo[]>(res);
-        new SimpleLog.Log(LogLevel.Info, $"获取{floor}到{floor+postInfos?.Length}楼回复用户成功").Send();
+        new SimpleLog.Log(LogLevel.Info, $"获取{floor}到{floor-1+postInfos?.Length}楼回复用户成功").Send();
         return postInfos;
     }
 
