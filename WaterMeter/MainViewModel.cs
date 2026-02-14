@@ -33,7 +33,7 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
         TopicId = config.TopicId;
         RefreshToken = config.RefreshToken;
         Interval = config.OverWatchInterval.ToString();
-        CurrentFloor = _config.CurrentFloor;
+        CurrentFloor = (Math.Min(int.Parse(_config.CurrentFloor), int.Parse(_config.MaxFloors))).ToString(); ;
         MaxFloor = _config.MaxFloors;
         _snackbarService = snackbarService;
         WeakReferenceMessenger.Default.Register(this);
@@ -236,7 +236,7 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
     {
         Dispatcher.Invoke(() =>
         {
-            CurrentFloor = message.Value.CurrentFloor;
+            CurrentFloor = (Math.Min(int.Parse(message.Value.CurrentFloor), int.Parse(message.Value.MaxFloors))).ToString();
             MaxFloor = message.Value.MaxFloors;
         });
     }
