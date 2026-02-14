@@ -12,6 +12,9 @@ public record WaterMetterConfig
     public string MaxFloors { get; set; }
     public int OverWatchInterval { get; set; } = 3;
 
+    public int AdultThreshold { get; set; } = 500;
+    public int AlmostAdultThreshold { get; set; } = 0;
+
     [Newtonsoft.Json.JsonIgnore]
     public string ApiAddress { get; } = "https://api.cc98.org";
 }

@@ -60,6 +60,8 @@ public class ConfigReader
         RefreshToken = "",
         CurrentFloor = "1",
         OverWatchInterval = 3,
-        TopicId = ""
+        TopicId = "",
+        AdultThreshold = 500,
+        AlmostAdultThreshold = 0,
     };
 }

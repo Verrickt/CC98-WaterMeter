@@ -41,17 +41,37 @@ public class UBBFormatter(OverWatchContext context)
     {
         var topicInfo = context.CachedTopicInfo;
         var sb = new StringBuilder();
-        sb.AppendLine($"[center]「[topic={topicInfo.Id}]{topicInfo.Title}[/topic]」成年榜 by [url=https://github.com/verrickt/CC98-WaterMeter]CC98水表助手[/url][/center]");
-        sb.AppendLine($"[right]——生成时间 {DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss")} 统计回复数 {result.TotalReplies} 成年用户数 {result.Entries.Count}[/right]");
+        if (result.AlmostAdults.Any())
+        {
+            sb.AppendLine($"[center]「[topic={topicInfo.Id}]{topicInfo.Title}[/topic]」成年&即将成年榜 by [url=https://github.com/verrickt/CC98-WaterMeter]CC98水表助手[/url][/center]");
+            sb.AppendLine($"[right]——生成时间 {DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss")} 统计回复数:{result.TotalReplies},成年用户数:{result.Adults.Count}[/right]");
+        }
+        else
+        {
+            sb.AppendLine($"[center]「[topic={topicInfo.Id}]{topicInfo.Title}[/topic]」成年榜 by [url=https://github.com/verrickt/CC98-WaterMeter]CC98水表助手[/url][/center]");
+            sb.AppendLine($"[right]——生成时间 {DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss")} 统计回复数:{result.TotalReplies},成年用户数:{result.Adults.Count},即将成年用户数:{result.AlmostAdults.Count}[/right]");
+        }
 
         sb.AppendLine("[table]");
         //生成表头
         WriteTableHeader(sb);
-        foreach (var statResult in result.Entries)
+        foreach (var statResult in result.Adults)
         {
             WriteRow(sb,statResult,topicInfo);
         }
-        sb.Append("[/table]");
+        sb.AppendLine("[/table]");
+        if (result.AlmostAdults.Count > 0) 
+        { 
+            sb.AppendLine($"[center]即将成年榜[/center]");
+
+            sb.AppendLine("[table]");
+            WriteTableHeader(sb);
+            foreach (var statResult in result.AlmostAdults)
+            {
+                WriteRow(sb,statResult,topicInfo);
+            }
+            sb.AppendLine("[/table]");
+        }
         return sb.ToString();
     }
 }

@@ -33,25 +33,46 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
         TopicId = config.TopicId;
         RefreshToken = config.RefreshToken;
         Interval = config.OverWatchInterval.ToString();
+        AlmostAdultThreshold = config.AlmostAdultThreshold.ToString();
+        AdultThreshold = config.AdultThreshold.ToString();
         CurrentFloor = (Math.Min(int.Parse(_config.CurrentFloor), int.Parse(_config.MaxFloors))).ToString(); ;
         MaxFloor = _config.MaxFloors;
         _snackbarService = snackbarService;
         WeakReferenceMessenger.Default.Register(this);
-        IsConfigInputValid = CheckConfig(TopicId,RefreshToken,Interval);
-        IsConfigValid = CheckConfig(config.TopicId, config.RefreshToken, config.OverWatchInterval.ToString());
+        IsConfigInputValid = CheckConfig(TopicId,RefreshToken,Interval,AdultThreshold,AlmostAdultThreshold);
+        IsConfigValid = CheckConfig(config.TopicId, config.RefreshToken, config.OverWatchInterval.ToString(),_config.AdultThreshold.ToString(),_config.AlmostAdultThreshold.ToString());
         NotOverwatching = true;
     }
 
-    private bool CheckConfig(string topicId,string refreshToken,string interval)
+    private bool CheckConfig(string topicId,string refreshToken,string interval,string adulthoodThreshold,string almostAdultThreshold)
     {
-        if (int.TryParse(interval, out var intervalResult)&&intervalResult>=3)
+        if (int.TryParse(interval, out var intervalResult)&&intervalResult>=3&&int.TryParse(adulthoodThreshold,out var adultthreshold)&&int.TryParse(almostAdultThreshold,out var almostAdultthreshold)
+            &&adultthreshold>0&&almostAdultthreshold>=0&&adultthreshold>almostAdultthreshold)
         {
             return !string.IsNullOrWhiteSpace(topicId) && !string.IsNullOrWhiteSpace(refreshToken);
         }
 
         return false;
     }
+    public string AlmostAdultThreshold
+    {
+        get => field;
+        set
+        {
+            SetProperty(ref field, value);
+            IsConfigInputValid = CheckConfig(TopicId, RefreshToken, Interval,AdultThreshold,AlmostAdultThreshold);
+        }
+    }
 
+    public string AdultThreshold
+    {
+        get => field;
+        set
+        {
+            SetProperty(ref field, value);
+            IsConfigInputValid = CheckConfig(TopicId, RefreshToken, Interval, AdultThreshold, AlmostAdultThreshold);
+        }
+    }
     public string MaxFloor
     {
         get;
@@ -111,7 +132,7 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
         set
         {
             SetProperty(ref field, value);
-            IsConfigInputValid = CheckConfig(TopicId, RefreshToken, Interval);
+            IsConfigInputValid = CheckConfig(TopicId, RefreshToken, Interval,AdultThreshold,AlmostAdultThreshold);
         }
     }
 
@@ -121,14 +142,15 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
         set
         {
             SetProperty(ref field, value);
-            IsConfigInputValid = CheckConfig(TopicId, RefreshToken, Interval);
+            IsConfigInputValid = CheckConfig(TopicId, RefreshToken, Interval, AdultThreshold, AlmostAdultThreshold);
         }
     }
 
     public string Interval
     {
         get => field;
-        set { SetProperty(ref field, value); IsConfigInputValid = CheckConfig(TopicId, RefreshToken, Interval);
+        set { SetProperty(ref field, value);
+            IsConfigInputValid = CheckConfig(TopicId, RefreshToken, Interval, AdultThreshold, AlmostAdultThreshold);
         }
     }
 
@@ -161,6 +183,30 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
             _snackbarService.Show("配置保存失败", "TopicId不能为空", ControlAppearance.Caution, new SymbolIcon(SymbolRegular.ErrorCircle24), TimeSpan.FromSeconds(3));
             return;
         }
+        if(int.TryParse(AlmostAdultThreshold,out var almostAdultThreshold)&&almostAdultThreshold>=0)
+        {
+            _config.AlmostAdultThreshold = almostAdultThreshold;
+        }
+        else
+        {
+            _snackbarService.Show("配置保存失败", "成人贴数必须为正整数", ControlAppearance.Caution, new SymbolIcon(SymbolRegular.ErrorCircle24), TimeSpan.FromSeconds(3));
+            return;
+        }
+        if (int.TryParse(AdultThreshold,out var adultThreshold)&&adultThreshold>0)
+        {
+            _config.AdultThreshold = adultThreshold;
+        }
+        else
+        {
+            _snackbarService.Show("配置保存失败", "即将成人贴数必须为正整数", ControlAppearance.Caution, new SymbolIcon(SymbolRegular.ErrorCircle24), TimeSpan.FromSeconds(3));
+            return;
+
+        }
+        if (adultThreshold < almostAdultThreshold)
+        {
+            _snackbarService.Show("配置保存失败", "即将成人贴数必须小于成人贴数", ControlAppearance.Caution, new SymbolIcon(SymbolRegular.ErrorCircle24), TimeSpan.FromSeconds(3));
+            return;
+        }
         if (int.TryParse(Interval, out var interval)&&interval>=3)
         {
             if (TopicId != _config.TopicId)
@@ -190,7 +236,7 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
     [RelayCommand(CanExecute = nameof(CanStart))]
     private void StartOverWatch()
     {
-        if (CheckConfig(TopicId, RefreshToken, Interval))
+        if (CheckConfig(TopicId, RefreshToken, Interval, AdultThreshold, AlmostAdultThreshold))
         {
             NotOverwatching = false;
             _overWatcher.StartOverWatch();
@@ -224,8 +270,9 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
     [RelayCommand(CanExecute = nameof(CanStart))]
     private async Task GenerateStatAsync()
     {
-        
-        var result = await _statGenerator.RunStatsAsync(_config.TopicId,500);
+        _snackbarService.Show("生成统计中", "正在统计用户回复", ControlAppearance.Info, new SymbolIcon(SymbolRegular.Circle24), TimeSpan.FromSeconds(3));
+        var result = await _statGenerator.RunStatsAsync(_config.TopicId,_config.AdultThreshold,_config.AlmostAdultThreshold);
+        _snackbarService.Show("生成统计中", "统计完成", ControlAppearance.Success, new SymbolIcon(SymbolRegular.Check24), TimeSpan.FromSeconds(3));
         var ans = _formatter.Format(result);
         var w = new StatResultWindow
         {
