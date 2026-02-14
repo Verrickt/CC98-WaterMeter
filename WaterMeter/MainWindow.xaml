@@ -64,14 +64,14 @@
                     <ui:TextBox PlaceholderEnabled="True" PlaceholderText="调用98API的时间间隔，大于3的正整数"
                                 ToolTipService.ToolTip="必须为大于3的正整数。"
                                 Margin="5" Text="{Binding Interval,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></ui:TextBox>
-                    <Label Margin="5">当前楼层</Label>
+                    <Label Margin="5">待获取楼层</Label>
                     <TextBox Margin="5" IsEnabled="False" Text="{Binding CurrentFloor,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                    <Label Margin="5">总楼层数</Label>
+                    <Label Margin="5">总层数</Label>
                     <TextBox Margin="5" IsEnabled="False" Text="{Binding MaxFloor,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     <StackPanel Orientation="Horizontal">
                         <Button  Margin="5" Command="{Binding SaveConfigCommand}" >保存设置</Button>
                         <Button Margin="5" Command="{Binding OpenConfigDirCommand}">打开配置目录</Button>
-                        <Button  Margin="5" ToolTipService.ToolTip="补全不在缓存中的楼层" Command="{Binding ResetCurrentFloorCommand}" >补全空余楼层</Button>
+                        <Button  Margin="5" ToolTipService.ToolTip="补全不在缓存中的楼层" Command="{Binding ResetCurrentFloorCommand}" >补全楼层空隙</Button>
                         <ui:Anchor Icon="{ui:SymbolIcon Link24}" NavigateUri="https://www.github.com/verrickt/WaterMeter" Margin="5" >关于</ui:Anchor>
                     </StackPanel>
                 </StackPanel>
