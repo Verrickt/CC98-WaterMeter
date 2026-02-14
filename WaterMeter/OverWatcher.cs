@@ -25,8 +25,15 @@ public class OverWatcher(CC98API api, OverWatchContext context)
             {
                 try
                 {
-                    if (context.CurrentFloor < context.MaxFloor)
+                    if (context.IsFloorCached(context.CurrentFloor))
                     {
+                        var nextUncached = context.ToNextUncachedFloor();
+                        new SimpleLog.Log(LogLevel.Info, $"楼层{context.CurrentFloor}命中缓存，跳转到{nextUncached}层").Send();
+                        await context.AdvanceAsync(nextUncached - context.CurrentFloor);
+                    }
+                    if (context.CurrentFloor <= context.MaxFloor)
+                    {
+
                         var postInfos = await api.GetPostInfoAsync(context.TopicId, context.CurrentFloor);
                         await context.UpdateReplyInfoAsync(postInfos);
                         await context.AdvanceAsync(postInfos?.Count);
