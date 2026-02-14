@@ -144,6 +144,7 @@ public partial class MainViewModel : ObservableRecipient, IRecipient<ConfigChang
         _overWatcher.StopOverWatch();
         CurrentFloor = "1";
         _config.CurrentFloor = "1";
+        WeakReferenceMessenger.Default.Send(new OverwatcherRequestMessage(OverwatcherAction.RebuildCache));
         await _reader.SaveConfigAsync(_config);
     }
 

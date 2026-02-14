@@ -71,6 +71,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Button  Margin="5" Command="{Binding SaveConfigCommand}" >保存设置</Button>
                         <Button Margin="5" Command="{Binding OpenConfigDirCommand}">打开配置目录</Button>
+                        <Button  Margin="5" ToolTipService.ToolTip="补全不在缓存中的楼层" Command="{Binding ResetCurrentFloorCommand}" >补全空余楼层</Button>
                         <ui:Anchor Icon="{ui:SymbolIcon Link24}" NavigateUri="https://www.github.com/verrickt/WaterMeter" Margin="5" >关于</ui:Anchor>
                     </StackPanel>
                 </StackPanel>
