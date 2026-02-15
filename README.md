@@ -32,7 +32,7 @@ CC98 论坛严禁非法爬虫行为
 
 1.  不保存回复内容：CC98 严禁爬虫非法获取大量数据。为了规避法律与账号风险，水表助手仅在本地缓存中保存各楼层的回复者 ID、回复时间等信息用统计，回复的具体内容**不做保存**
 2.  频率限制：程序在代码逻辑层限制了最低访问间隔为 **3 秒**，以减轻对服务器造成的负担
-3.  身份透明：程序在所有请求头中通过 UserAgent [显式声明了身份](https://github.com/Verrickt/WaterMeter/blob/b09d902f6d1ebab4d1b8a6e1ec30b2cb2b76e2dc/WaterMeter/API/RefreshTokenHttpMessageHandler.cs#L42)
+3.  身份透明：程序在所有请求头中通过 UserAgent [显式声明了身份](https://github.com/Verrickt/CC98-WaterMeter/blob/3ea8de9f8153c9cb0332280136f6768c2af85991/WaterMeter/API/RefreshTokenHttpMessageHandler.cs#L42)
 ``` csharp
 request.Headers.UserAgent.Add(new ProductInfoHeaderValue("WaterMeter", "1.0"));
 ```
@@ -78,4 +78,4 @@ RefreshToken可在CC98论坛网页端的任意页面中调出开发者工具，
     *  本程序使用了 CC98 网页端的 `ClientID` 与 `ClientSecret`，如果您怀疑`RefreshToken`泄露，请到[CC98登录中心](https://openid.cc98.org/Grant)中撤销应用名称为**CC98 论坛**的授权
 2.  数据处理：`{topicId}-replies.json` 存储了每层楼回复者的信息（每行一个Json数组，元素数量不定）
     *   注意：由于网络同步或删除机制，缓存数据可能存在重复项或已被删除（`IsDeleted == true`）的回复
-    *   建议：在进行最终统计前，请务必根据 `floor`（楼层数）字段进行去重和数据清洗。可参考[StatGenerator](https://github.com/Verrickt/WaterMeter/blob/b09d902f6d1ebab4d1b8a6e1ec30b2cb2b76e2dc/WaterMeter/Stat/StatGenerator.cs#L10)
+    *   建议：在进行最终统计前，请务必根据 `floor`（楼层数）字段进行去重和数据清洗。可参考[StatGenerator](https://github.com/Verrickt/CC98-WaterMeter/blob/3ea8de9f8153c9cb0332280136f6768c2af85991/WaterMeter/Stat/StatGenerator.cs#L11)
