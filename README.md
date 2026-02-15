@@ -1,7 +1,7 @@
 # 水表助手 (WaterMaker) 
 
 ### 简介
-**水表助手 (WaterMaker)** 是一款专为 CC98 论坛“水楼”设计的非官方数据统计工具，主要用于成年用户（楼内发帖数 ≥ 500）的数据统计与分析
+**水表助手 (WaterMaker)** 是一款专为 CC98 论坛“水楼”设计的非官方数据统计工具，主要用于成年用户（楼内发帖数 ≥ 500）的数据统计与分析，并支持UBB格式导出，便于在论坛内发布结果。
 
 本程序基于WPF框架构建，UI 界面采用 [WPF UI](https://wpfui.lepo.co) 库开发，于[GNU General Public License V3](https://www.gnu.org/licenses/gpl-3.0.en.html#license-text)许可下开源
 
@@ -16,6 +16,7 @@
 
 ### 合规性声明与风险预警
 
+#### 合规性声明
 CC98 论坛严禁非法爬虫行为
 
 根据论坛官方公告 [《关于近期上线反爬虫系统的说明》](https://www.cc98.org/topic/4918357#1)：
@@ -35,14 +36,38 @@ CC98 论坛严禁非法爬虫行为
 ``` csharp
 request.Headers.UserAgent.Add(new ProductInfoHeaderValue("WaterMeter", "1.0"));
 ```
+#### 风险预警
 
-【免责声明】
+本程序是由第三方独立开发的开源工具，**并非** CC98 论坛的官方发布版本。
 
-尽管已采取上述措施，使用者仍需知晓：使用本程序仍可能被系统认定为爬虫行为并导致账号被锁定。本程序根据GPL 协议以 **“原样提供”（Provided AS-IS）** 形式分发，作者**不提供**任何明示或暗示的保证（No Warranty, explicitly or implied）
 
-请使用者**自行承担**所有风险，由此产生的任何账号封禁、法律责任均与作者无关
+本程序按“原样提供”（Provided AS-IS），**不提供**任何明示或暗示的保证（No Warranty, explicitly or implied）。开发者不对因使用本程序而导致的任何直接或间接后果（包括但不限于账号风险、数据偏差或违反论坛准则等情况）承担任何法律责任。请在使用前**自行评估**并遵守相关平台的用户协议。
+
+本程序所使用的图形标识、图标及相关视觉资源，其知识产权及版权均归 [CC98 论坛](https://www.cc98.org/) 所有。本程序仅出于识别目的使用上述资源。
+
 
 ---
+
+### 使用说明与界面截图
+
+#### 使用说明
+
+在开始使用前，您需要填写帖子ID、RefreshToken。
+
+RefreshToken可在CC98论坛网页端的任意页面中调出开发者工具，
+在本地存储中，找到键名称为`refresh_token`的项，`str-`后的内容即为程序所需要的RefreshToken。
+
+![RefreshToken](/Images/RefreshToken.png)
+
+当您填写完成后，请点击保存配置按钮，以便程序进行验证。
+
+配置信息验证通过后，开始守望按钮将变为启用状态，点击即可获取回复者数据，并生成统计。
+
+#### 界面截图
+![主界面](/Images/MainWindow.png)
+
+![统计界面](/Images/StatWindow.png)
+
 
 ### 数据存储与安全说明
 
