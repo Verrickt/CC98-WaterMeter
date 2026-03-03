@@ -5,7 +5,7 @@
 
 本程序基于WPF框架构建，UI 界面采用 [WPF UI](https://wpfui.lepo.co) 库开发，于[GNU General Public License V3](https://www.gnu.org/licenses/gpl-3.0.en.html#license-text)许可下开源
 
-您可以使用Visual Studio 2026自行构建，也可以下载由Github Action提供的[预编译二进制]((https://github.com/Verrickt/CC98-WaterMeter/releases/))
+您可以使用Visual Studio 2026自行构建，也可以下载由Github Action提供的[预编译二进制](https://github.com/Verrickt/CC98-WaterMeter/releases/)
 
 ### 核心机制
 程序利用 CC98 网页端的 `ClientID` 与 `ClientSecret`，通过用户提供的 `RefreshToken` 调用 [CC98 官方 API](https://api.cc98.org)
